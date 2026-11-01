@@ -52,6 +52,10 @@
   .box textarea, .box select { width:100%; padding:9px 10px; border:1px solid var(--line); border-radius:8px; font-size:.95rem; font-family:inherit; }
   .item.active { border-color:var(--green); background:#fff; transform:translateY(-2px); box-shadow:0 0 0 2px var(--green), 0 0 18px 4px rgba(31,107,69,.45); }
   .item.active h3 { color:var(--green); }
+  .item .meta a.loc { color:inherit; font-size:inherit; text-decoration:underline; }
+  .item .meta a.loc:hover { color:var(--green); }
+  .leaflet-popup-content a.loc { display:inline; background:none; color:var(--ink); padding:0; margin:0; font-size:inherit; font-weight:400; text-decoration:underline; }
+  .leaflet-popup-content a.loc:hover { color:var(--green); }
   .chip.add { background:none; border:none; color:var(--green); font-weight:700; padding:6px 8px; }
   .chip.add:hover { text-decoration:underline; }
   #modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:2000; align-items:center; justify-content:center; padding:16px; }
@@ -127,6 +131,7 @@ const R = (a, b) => { const o = []; for (let d = new Date(a + 'T12:00'); d <= ne
 //          Several runs: [...R('2026-11-06','2026-11-07'), ...R('2026-11-13','2026-11-15')]
 //   cost:  type anything. If the word "free" appears anywhere in it, the market shows under the Free only button.
 //   free:  (optional) free:true forces a market into Free only, free:false keeps it out. Leave it off to let the word "free" in cost decide.
+//   map:   (optional) what Google Maps should search for when someone clicks the location, e.g. map:"226066 112 St W, Foothills County, AB". Leave it off to use the place text.
 //   note:  (optional) extra words shown after the dates, e.g. note:"other days may follow"
 // The date line on each card, the date buttons and the sorting all come from "dates", so that is the one to keep right.
 const MARKETS = [
@@ -224,6 +229,7 @@ function fmtDates(ds) {
     ? WD[g.start.getDay()] + ', ' + MN[g.start.getMonth()] + ' ' + g.start.getDate()
     : MN[g.start.getMonth()] + ' ' + g.start.getDate() + '–' + g.end.getDate()).join(', ');
 }
+const placeLink = m => `<a class="loc" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(m.map || (m.place + ', Alberta'))}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${m.place}</a>`;
 const whenText = m => (m.when || fmtDates(m.dates)) + (m.note ? ' (' + m.note + ')' : '');
 function nextDate(m) {
   const t = iso(new Date()), lo = range.from > t ? range.from : t;
@@ -231,7 +237,7 @@ function nextDate(m) {
 }
 const matchesQuery = m => !query || (m.name + ' ' + m.place + ' ' + whenText(m)).toLowerCase().includes(query);
 function popupHtml(m) {
-  return `<strong>${m.name}</strong><br>${whenText(m)}<br>${m.time}<br>${m.place}<br>${m.cost}<br><a href="${m.url}" target="_blank" rel="noopener">Official page →</a> <a href="#" class="rep" data-name="${encodeURIComponent(m.name)}">Report an error</a>`;
+  return `<strong>${m.name}</strong><br>${whenText(m)}<br>${m.time}<br>📍 ${placeLink(m)}<br>${m.cost}<br><a href="${m.url}" target="_blank" rel="noopener">Official page →</a> <a href="#" class="rep" data-name="${encodeURIComponent(m.name)}">Report an error</a>`;
 }
 
 function render() {
@@ -245,7 +251,7 @@ function render() {
     const el = document.createElement('div');
     el.className = 'item';
     el.innerHTML = `<h3>${m.name}</h3>
-      <div class="meta">📅 ${whenText(m)}<br>🕒 ${m.time}<br>📍 ${m.place}</div>
+      <div class="meta">📅 ${whenText(m)}<br>🕒 ${m.time}<br>📍 ${placeLink(m)}</div>
       <span class="tag ${/^free/i.test(m.cost) ? '' : 'paid'}">${m.cost}</span>
       <div><a href="${m.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Official page →</a></div>`;
     el.onclick = () => { map.setView([m.lat, m.lng], 13); marker.openPopup(); };
