@@ -22,22 +22,22 @@
   #map { height:100%; }
   .item { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:12px; margin-bottom:10px; cursor:pointer; }
   .item { transition: transform .15s ease, box-shadow .15s ease, background .15s ease, border-color .15s ease; }
-  .item:hover { border-color:var(--red); background:#fffbea; transform:translateY(-2px); box-shadow:0 6px 16px rgba(179,38,45,.25); }
+  .item:hover { border-color:var(--red); background:#fff; transform:translateY(-2px); box-shadow:0 6px 16px rgba(179,38,45,.25); }
   .item:hover h3 { color:var(--red); }
   .item h3 { margin:0 0 4px; font-size:1rem; }
   .item .meta { font-size:.85rem; color:var(--muted); line-height:1.4; }
   .tag { display:inline-block; font-size:.75rem; padding:2px 8px; border-radius:999px; background:#e6f2ec; color:var(--green); margin-top:6px; }
   .tag.paid { background:#fbe9ea; color:var(--red); }
   .item a, .leaflet-popup-content a { color:var(--red); font-size:.85rem; }
-  .leaflet-popup-content-wrapper { background:#e4f5e1; border-top:5px solid var(--red); border-radius:14px; box-shadow:0 8px 24px rgba(179,38,45,.35); }
-  .leaflet-popup-tip { background:#e4f5e1; }
+  .leaflet-popup-content-wrapper { background:#fff; border-top:5px solid var(--red); border-radius:14px; box-shadow:0 8px 24px rgba(179,38,45,.35); }
+  .leaflet-popup-tip { background:#fff; }
   .leaflet-popup-content { margin:14px 18px; line-height:1.55; font-size:.9rem; }
   .leaflet-popup-content strong { color:var(--red); font-size:1.05rem; }
-  .leaflet-popup-content a { display:inline-block; margin-top:6px; background:var(--red); color:#fff; padding:5px 12px; border-radius:999px; text-decoration:none; font-weight:600; }
+  .leaflet-popup-content a { display:inline-block; margin-top:6px; background:var(--green); color:#fff; padding:5px 12px; border-radius:999px; text-decoration:none; font-weight:600; }
   .pin { font-size:24px; line-height:1; filter: drop-shadow(0 1px 2px rgba(0,0,0,.4)); }
   .coffee { text-align:center; padding:14px 16px 24px; font-size:.95rem; }
-  .coffee a { display:inline-block; margin-left:6px; background:var(--red); color:#fff; text-decoration:none; padding:8px 16px; border-radius:999px; font-weight:600; }
-  .chip.add { background:var(--red); color:#fff; border-color:var(--red); }
+  .coffee a { display:inline-block; margin-left:6px; background:var(--green); color:#fff; text-decoration:none; padding:8px 16px; border-radius:999px; font-weight:600; }
+  .chip.add { background:var(--green); color:#fff; border-color:var(--green); }
   #modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:2000; align-items:center; justify-content:center; padding:16px; }
   #modal.open { display:flex; }
   .box { background:#fff; border-top:6px solid var(--red); border-radius:14px; padding:20px; width:100%; max-width:420px; box-shadow:0 10px 30px rgba(0,0,0,.35); }
@@ -111,7 +111,7 @@ const MARKETS = [
     place:"29 Masters Park SE", lat:50.896, lng:-113.956, url:"https://happeningnext.com/event/the-grand-south-christmas-market-eid3a0dtchhxc" },
   { name:"Spruce Meadows International Christmas Market", when:"Nov 13–15, 20–22, 27–29, Dec 4–6", time:"See website", dates:[...R('2026-11-13','2026-11-15'),...R('2026-11-20','2026-11-22'),...R('2026-11-27','2026-11-29'),...R('2026-12-04','2026-12-06')], free:false, cost:"From $18",
     place:"18011 Spruce Meadows Way SW", lat:50.866, lng:-114.297, url:"https://www.sprucemeadows.com/christmasmarket/" },
-  { name:"Calgary Winter Market", when:"Thu–Sun starting Nov 19 (check end date)", time:"See website", dates:[...R('2026-11-19','2026-11-22'),...R('2026-11-26','2026-11-29')], free:false, cost:"$10",
+  { name:"Calgary Winter Market", when:"Thu–Sun from Nov 19 (daily Dec 15–24)", time:"See website", dates:[...R('2026-11-19','2026-11-22'),...R('2026-11-26','2026-11-29'),...R('2026-12-03','2026-12-06'),...R('2026-12-10','2026-12-13'),...R('2026-12-15','2026-12-24')], free:false, cost:"$10",
     place:"Eau Claire Plaza, 139 Barclay Parade SW", lat:51.051, lng:-114.072, url:"https://calgarywintermarket.ca/" },
   { name:"Glenbrook Makers Market", when:"Sat, Nov 21", time:"10 AM – 4 PM", dates:['2026-11-21'], free:true, cost:"Free",
     place:"Glenbrook Community Association, 3524 45 St SW", lat:51.0215, lng:-114.164, url:"https://www.eventbrite.ca/e/glenbrook-makers-market-2026-tickets-2000280032423" },
@@ -124,7 +124,39 @@ const MARKETS = [
   { name:"The Barn Artisan Christmas Market", when:"Sun, Nov 29", time:"11 AM – 4 PM", dates:['2026-11-29'], free:true, cost:"Free",
     place:"The Shawnessy Barn, 224 Shawmeadows Rd SW", lat:50.9137, lng:-114.0728, url:"https://allevents.in/calgary/the-barn-artisan-market-presents-the-christmas-market-tickets/80004216424065" },
   { name:"Calgary Christmas Festival of Food, Craft & Vendor Market", when:"Dec 4–6", time:"10 AM – 6 PM", dates:R('2026-12-04','2026-12-06'), free:true, cost:"Free",
-    place:"Olympic Plaza", lat:51.0461, lng:-114.0631, url:"https://happeningnext.com/event/✨-2026-calgary-christmas-festival-of-food-craft-and-vendor-market-✨-eid1ef0l2uwqqja" }
+    place:"Olympic Plaza", lat:51.0461, lng:-114.0631, url:"https://happeningnext.com/event/✨-2026-calgary-christmas-festival-of-food-craft-and-vendor-market-✨-eid1ef0l2uwqqja" },
+  { name:"Okotoks Christmas Market", when:"Nov 6–7 and Nov 13–15", time:"Varies (mostly 9 AM – 4 PM)", dates:[...R('2026-11-06','2026-11-07'),...R('2026-11-13','2026-11-15')], free:false, cost:"Ticketed (from $5)",
+    place:"Okotoks: Viking Rentals Centre, 204 Community Way & D'Arcy Ranch Golf Club", lat:50.7305, lng:-113.979, url:"https://www.themarketsquare.ca/events/2026-okotoks-christmas-market-2026-11-06-15-00-1" },
+  { name:"Chestermere Christmas Market", when:"Nov 6–8 and Nov 28–29", time:"Varies (mostly 10 AM – 3 PM)", dates:[...R('2026-11-06','2026-11-08'),...R('2026-11-28','2026-11-29')], free:false, cost:"Not listed",
+    place:"Chestermere: Rec Centre MPP Hall, 201 W Chestermere Dr", lat:51.0383, lng:-113.8217, url:"https://allevents.in/chestermere/chestermere-christmas-market/200030602759115" },
+  { name:"Chestermere December Christmas Market", when:"Dec 12–13", time:"10 AM – 3 PM", dates:R('2026-12-12','2026-12-13'), free:false, cost:"Not listed",
+    place:"Chestermere: Rec Centre MPP Hall, 201 W Chestermere Dr", lat:51.0391, lng:-113.8225, url:"https://www.facebook.com/events/1040608962237679" },
+  { name:"Strathmore Market Weekend", when:"Nov 28–29", time:"Sat 11 AM – 5 PM, Sun 10 AM – 3 PM", dates:R('2026-11-28','2026-11-29'), free:false, cost:"Not listed",
+    place:"Strathmore: Motor Products Sports Centre, 1150 Edgeview Rd", lat:51.045, lng:-113.39, url:"https://www.facebook.com/events/1773569470523964/" },
+  { name:"Strathmore Library Holiday Market", when:"Sat, Nov 28", time:"10 AM – 2 PM", dates:['2026-11-28'], free:false, cost:"Not listed",
+    place:"Strathmore Municipal Library", lat:51.0395, lng:-113.401, url:"https://www.facebook.com/strathmorelibrary/posts/986818781115287:986818781115287" },
+  { name:"Vintage & Vines Christmas Market", when:"Sat, Nov 28", time:"11 AM – 5 PM", dates:['2026-11-28'], free:false, cost:"Not listed",
+    place:"Strathmore Civic Centre", lat:51.0388, lng:-113.398, url:"https://www.facebook.com/events/1398516424609380" },
+  { name:"Christmas Pottery Market", when:"Nov 14–15", time:"10 AM – 4 PM", dates:R('2026-11-14','2026-11-15'), free:false, cost:"Not listed",
+    place:"Cochrane: Saffron Pottery Studio, 205 3rd Ave W", lat:51.1893, lng:-114.472, url:"https://www.facebook.com/SaffronCollectiveStudios" },
+  { name:"The Cochrane Christmas Market", when:"Sun, Nov 15", time:"10 AM – 4 PM", dates:['2026-11-15'], free:false, cost:"Not listed",
+    place:"Cochrane Ranche House", lat:51.19, lng:-114.472, url:"https://www.facebook.com/CochraneChristmasMarket" },
+  { name:"Cochrane Christmas Farmers Market", when:"Dec 12–13", time:"10 AM – 4 PM", dates:R('2026-12-12','2026-12-13'), free:false, cost:"Not listed",
+    place:"Cochrane: 800 Griffin Rd E", lat:51.186, lng:-114.454, url:"https://www.facebook.com/events/1174120861845827/" },
+  { name:"Last Chance Christmas Market", when:"Fri, Dec 18", time:"4 – 9 PM", dates:['2026-12-18'], free:false, cost:"Not listed",
+    place:"Cochrane Lions Event Centre, 109 5th Ave", lat:51.189, lng:-114.47, url:"https://www.facebook.com/photo?fbid=122122220313428853&set=pb.61592865591597.-2207520000" },
+  { name:"Banff Christmas Market", when:"Nov 19–22, Nov 27–29, Dec 4–6, Dec 11–13", time:"Varies (mostly 10 AM – 8 PM)", dates:[...R('2026-11-19','2026-11-22'),...R('2026-11-27','2026-11-29'),...R('2026-12-04','2026-12-06'),...R('2026-12-11','2026-12-13')], free:false, cost:"Ticketed",
+    place:"Banff Heritage Train Station", lat:51.176, lng:-115.57, url:"https://banffchristmasmarket.com/" },
+  { name:"Canmore Christmas Artisans' Market", when:"Nov 21–22", time:"10 AM – 4 PM", dates:R('2026-11-21','2026-11-22'), free:false, cost:"$5 entry",
+    place:"Canmore Recreation Centre, 1900 8 Ave", lat:51.0886, lng:-115.3469, url:"https://www.facebook.com/CanmoreChristmasArtisansMarket" },
+  { name:"Crossfield Farmers' Market Christmas Market", when:"Nov 6–7", time:"Fri 5 – 9 PM, Sat 10 AM – 4 PM", dates:R('2026-11-06','2026-11-07'), free:false, cost:"Not listed",
+    place:"Crossfield: 4 venues, incl. Community Centre", lat:51.433, lng:-114.027, url:"https://www.facebook.com/events/1595563102306038" },
+  { name:"Carstairs Christmas Market", when:"Sat, Nov 14", time:"11 AM – 4 PM", dates:['2026-11-14'], free:false, cost:"Not listed",
+    place:"Carstairs Community Hall, 1100 Lackner Way", lat:51.564, lng:-114.097, url:"https://www.facebook.com/events/1504386490809493" },
+  { name:"Redwood Meadows Christmas Market", when:"Nov 21–22", time:"10 AM – 5 PM (Sun until 4)", dates:R('2026-11-21','2026-11-22'), free:false, cost:"Not listed",
+    place:"1 Manyhorses Dr, Redwood Meadows", lat:50.97, lng:-114.53, url:"https://www.facebook.com/events/1887168459575496" },
+  { name:"YYC Weihnachtsmarkt Christmas Market", when:"Nov 28–29", time:"10 AM – 4 PM", dates:R('2026-11-28','2026-11-29'), free:false, cost:"Not listed",
+    place:"260 Century Downs Dr, Balzac", lat:51.2132, lng:-114.0016, url:"https://www.facebook.com/events/1054293574080813" }
 ];
 // ====== end of list ======
 
@@ -156,6 +188,7 @@ function render() {
     el.onclick = () => { map.setView([m.lat, m.lng], 13); marker.openPopup(); };
     list.appendChild(el);
   });
+  if (shown.length) map.fitBounds(shown.map(m => [m.lat, m.lng]), { padding:[40,40], maxZoom:12 });
   document.getElementById('count').textContent = shown.length + ' market' + (shown.length === 1 ? '' : 's');
   if (!shown.length) list.innerHTML = '<p>No markets match these filters.</p>';
 }
@@ -189,21 +222,27 @@ buildButtons().filter((r, i) => i === 0 || MARKETS.some(m => m.dates.some(x => x
   chips.appendChild(b);
 });
 document.getElementById('freeBtn').onclick = e => { freeOnly = !freeOnly; e.target.classList.toggle('on', freeOnly); render(); };
-// ====== SUGGEST A MARKET: put YOUR email address between the quotes ======
-const CONTACT_EMAIL = 'PUT-YOUR-EMAIL-HERE';
-// =========================================================================
+// ====== SUGGEST A MARKET: paste your free Formspree form URL between the quotes ======
+const FORM_URL = 'PASTE-YOUR-FORM-URL-HERE';
+// =======================================================================================
 const modal = document.getElementById('modal');
-document.getElementById('addBtn').onclick = () => { document.getElementById('formMsg').textContent = ''; modal.classList.add('open'); };
+const msg = document.getElementById('formMsg');
+document.getElementById('addBtn').onclick = () => { msg.textContent = ''; modal.classList.add('open'); };
 document.getElementById('mCancel').onclick = () => modal.classList.remove('open');
 modal.onclick = e => { if (e.target === modal) modal.classList.remove('open'); };
-document.getElementById('mSend').onclick = () => {
+document.getElementById('mSend').onclick = async () => {
+  msg.style.color = '#b3262d';
   const link = document.getElementById('mLink').value.trim();
-  if (!link) { document.getElementById('formMsg').textContent = 'Please paste a link to the market.'; return; }
-  const name = document.getElementById('mName').value.trim();
-  const from = document.getElementById('mFrom').value.trim();
-  const body = 'Link: ' + link + '\nMarket name: ' + (name || '(not given)') + '\nReply to: ' + (from || '(not given)');
-  window.location.href = 'mailto:' + CONTACT_EMAIL + '?subject=' + encodeURIComponent('Missing Christmas market') + '&body=' + encodeURIComponent(body);
-  modal.classList.remove('open');
+  if (!link) { msg.textContent = 'Please paste a link to the market.'; return; }
+  if (FORM_URL.startsWith('PASTE')) { msg.textContent = 'The form is not connected yet.'; return; }
+  try {
+    const r = await fetch(FORM_URL, { method:'POST', headers:{ 'Content-Type':'application/json', 'Accept':'application/json' },
+      body: JSON.stringify({ link, market: document.getElementById('mName').value.trim(), email: document.getElementById('mFrom').value.trim(), _subject:'Missing Christmas market' }) });
+    if (!r.ok) throw new Error('bad response');
+    msg.style.color = '#1f6b45'; msg.textContent = 'Thank you! I will check it out.';
+    ['mLink','mName','mFrom'].forEach(id => document.getElementById(id).value = '');
+    setTimeout(() => modal.classList.remove('open'), 1800);
+  } catch (e) { msg.textContent = 'Sorry, something went wrong. Please try again.'; }
 };
 
 render();
