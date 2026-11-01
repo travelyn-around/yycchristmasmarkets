@@ -10,14 +10,22 @@
   :root { --bg:#fff3d6; --card:#fff; --ink:#2b2b2b; --muted:#6b6b6b; --red:#b3262d; --green:#1f6b45; --line:#eadfd3; }
   * { box-sizing: border-box; }
   body { margin:0; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background:linear-gradient(180deg,#fff3d6 0%,#ffe4e1 100%) fixed; color:var(--ink); }
-  header { background:var(--red); color:#fff; padding:14px 16px; }
-  header h1 { margin:0; font-size:1.25rem; }
-  header p { margin:4px 0 0; font-size:.85rem; opacity:.9; }
+  header { position:relative; overflow:hidden; color:#fff; padding:26px 16px 14px;
+    background-image: radial-gradient(circle at 20% 30%, rgba(255,255,255,.22) 2px, transparent 3px), radial-gradient(circle at 70% 65%, rgba(255,255,255,.18) 2px, transparent 3px), linear-gradient(120deg,#8e1b22 0%,#c62d36 45%,#e8474d 100%);
+    background-size: 64px 64px, 96px 96px, auto; border-bottom:4px solid #ffd54a; }
+  header h1 { margin:0; font-size:1.35rem; text-shadow:0 2px 4px rgba(0,0,0,.25); position:relative; }
+  header p { margin:4px 0 0; font-size:.9rem; opacity:.95; position:relative; }
+  #lights { position:absolute; top:0; left:0; right:0; height:16px; display:flex; justify-content:space-between; overflow:hidden; border-top:2px solid rgba(0,0,0,.25); }
+  #lights i { width:9px; height:13px; margin-top:3px; border-radius:50% 50% 55% 55%; box-shadow:0 0 8px 2px currentColor; animation:twinkle 1.6s ease-in-out infinite alternate; }
+  @keyframes twinkle { from { opacity:.45; } to { opacity:1; } }
+  .deco { position:absolute; right:16px; bottom:8px; font-size:1.7rem; letter-spacing:6px; filter:drop-shadow(0 2px 3px rgba(0,0,0,.3)); }
+  @media (prefers-reduced-motion: reduce) { #lights i { animation:none; } }
+  @media (max-width: 760px) { .deco { font-size:1.2rem; letter-spacing:2px; } }
   .bar { display:flex; flex-wrap:wrap; gap:8px; padding:10px 16px; background:#fff; border-bottom:1px solid var(--line); align-items:center; }
   .chip { border:1px solid var(--line); background:#fff; border-radius:999px; padding:6px 14px; font-size:.9rem; cursor:pointer; }
   .chip.on { background:var(--green); color:#fff; border-color:var(--green); }
   .count { margin-left:auto; font-size:.85rem; color:var(--muted); }
-  main { display:grid; grid-template-columns: 380px 1fr; height: calc(100vh - 118px); }
+  main { display:grid; grid-template-columns: 380px 1fr; height: calc(100vh - 140px); }
   #list { background:rgba(255,255,255,.35); overflow-y:auto; padding:12px; border-right:1px solid var(--line); }
   #map { height:100%; }
   .item { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:12px; margin-bottom:10px; cursor:pointer; }
@@ -66,6 +74,8 @@
 </head>
 <body>
 <header>
+  <div id="lights"></div>
+  <div class="deco">🎁🍪🎄🍪🎁</div>
   <h1>🎄 Calgary Christmas Market Map 2026</h1>
   <p>Find Christmas markets in and around Calgary.</p>
 </header>
@@ -108,11 +118,11 @@ const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); r
 const R = (a, b) => { const o = []; for (let d = new Date(a + 'T12:00'); d <= new Date(b + 'T12:00'); d.setDate(d.getDate() + 1)) o.push(iso(d)); return o; };
 // ====== YOUR MARKET LIST: add a new market by copying one block and editing it ======
 const MARKETS = [
-  { name:"Millarville Christmas Market", when:"Nov 5–8 and Nov 12–15", time:"10 AM – 5 PM", dates:[...R('2026-11-05','2026-11-08'),...R('2026-11-12','2026-11-15')], free:false, cost:"See website",
-    place:"Millarville Racing & Agricultural Society, 306097 192 St W", lat:50.895, lng:-114.35, url:"https://curiocity.com/?p=266326" },
+  { name:"Millarville Christmas Market", when:"Nov 5–8 and Nov 12–15", time:"10 AM – 5 PM", dates:[...R('2026-11-05','2026-11-08'),...R('2026-11-12','2026-11-15')], free:false, cost:"$8 (ages 12+), free under 12",
+    place:"Millarville Racing & Agricultural Society, 306097 192 St W", lat:50.895, lng:-114.35, url:"https://millarvilleracetrack.com/annual-christmas-market/" },
   { name:"Bowness Christmas Market", when:"Sat, Nov 7", time:"10 AM – 4 PM", dates:['2026-11-07'], free:true, cost:"Free",
     place:"Bowness Community Association, 7904 43 Ave NW", lat:51.0867, lng:-114.2063, url:"https://www.eventbrite.ca/e/bowness-christmas-market-tickets-1999006545389" },
-  { name:"Inglewood Holiday Night Market", when:"Nov 13–14, 20–21, 27–28", time:"Evenings (check site)", dates:['2026-11-13','2026-11-14','2026-11-20','2026-11-21','2026-11-27','2026-11-28'], free:true, cost:"Free",
+  { name:"Inglewood Holiday Night Market", when:"Fridays & Saturdays: Nov 13–14, 20–21, 27–28", time:"4 – 9 PM", dates:['2026-11-13','2026-11-14','2026-11-20','2026-11-21','2026-11-27','2026-11-28'], free:false, cost:"$5 (free for seniors 65+ and kids under 12)",
     place:"The Quonset at Crossroads Market, 1235 26 Ave SE", lat:51.0278, lng:-114.04, url:"https://www.inglewoodnightmarket.ca/" },
   { name:"Grand South Christmas Market", when:"Sat, Nov 14", time:"10 AM – 4 PM", dates:['2026-11-14'], free:false, cost:"Not listed",
     place:"29 Masters Park SE", lat:50.896, lng:-113.956, url:"https://happeningnext.com/event/the-grand-south-christmas-market-eid3a0dtchhxc" },
@@ -270,6 +280,10 @@ document.getElementById('mSend').onclick = async () => {
 };
 
 document.getElementById('q').addEventListener('input', e => { query = e.target.value.trim().toLowerCase(); render(); });
+(function () {
+  const wrap = document.getElementById('lights'), cols = ['#ffd54a', '#7be07b', '#8ad4ff', '#ff9fb2'];
+  for (let i = 0; i < 90; i++) { const b = document.createElement('i'); b.style.background = cols[i % 4]; b.style.color = cols[i % 4]; b.style.animationDelay = ((i % 5) * 0.3) + 's'; wrap.appendChild(b); }
+})();
 render();
 </script>
 </body>
