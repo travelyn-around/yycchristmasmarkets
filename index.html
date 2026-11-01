@@ -50,6 +50,8 @@
   .search:focus { outline:none; border-color:var(--green); box-shadow:0 0 0 3px rgba(31,107,69,.25); }
   .leaflet-popup-content a.rep { background:none; color:var(--muted); padding:0; margin-left:8px; font-weight:400; text-decoration:underline; }
   .box textarea, .box select { width:100%; padding:9px 10px; border:1px solid var(--line); border-radius:8px; font-size:.95rem; font-family:inherit; }
+  .item.active { border-color:var(--green); background:#fff; transform:translateY(-2px); box-shadow:0 0 0 2px var(--green), 0 0 18px 4px rgba(31,107,69,.45); }
+  .item.active h3 { color:var(--green); }
   .chip.add { background:none; border:none; color:var(--green); font-weight:700; padding:6px 8px; }
   .chip.add:hover { text-decoration:underline; }
   #modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:2000; align-items:center; justify-content:center; padding:16px; }
@@ -124,6 +126,7 @@ const R = (a, b) => { const o = []; for (let d = new Date(a + 'T12:00'); d <= ne
 //   dates: the days it runs. One day: ['2026-12-05']. A run of days: R('2026-12-11','2026-12-13').
 //          Several runs: [...R('2026-11-06','2026-11-07'), ...R('2026-11-13','2026-11-15')]
 //   cost:  type anything. If the word "free" appears anywhere in it, the market shows under the Free only button.
+//   free:  (optional) free:true forces a market into Free only, free:false keeps it out. Leave it off to let the word "free" in cost decide.
 //   note:  (optional) extra words shown after the dates, e.g. note:"other days may follow"
 // The date line on each card, the date buttons and the sorting all come from "dates", so that is the one to keep right.
 const MARKETS = [
@@ -194,7 +197,9 @@ const MARKETS = [
   { name:"Distinctly Nanton Christmas Market", time:"10 AM – 4 PM", dates:['2026-11-28'], cost:"Not listed",
     place:"Nanton Community Centre", lat:50.3485, lng:-113.7655, url:"https://www.facebook.com/people/Distinctly-Nanton-Christmas-Market/100057252947702/" },
   { name:"High River Winter Market", note:"other days may follow, check the listing", time:"From 1:15 PM", dates:['2026-12-04'], cost:"Not listed",
-    place:"Highwood Centre, High River", lat:50.581, lng:-113.875, url:"https://allevents.in/high-river/christmas" }
+    place:"Highwood Centre, High River", lat:50.581, lng:-113.875, url:"https://allevents.in/high-river/christmas" },
+  { name:"Calgary Christmas Festival of Food, Craft & Vendor Market", time:"10 AM – 6 PM", dates:R('2026-12-04','2026-12-06'), cost:"Free",
+    place:"Olympic Plaza", lat:51.0461, lng:-114.0631, url:"https://happeningnext.com/event/✨-2026-calgary-christmas-festival-of-food-craft-and-vendor-market-✨-eid1ef0l2uwqqja" }
 ];
 // ====== end of list ======
 
@@ -207,7 +212,7 @@ const icon = L.divIcon({ html:'<div class="pin">🎄</div>', className:'', iconS
 let range = { from:'0000', to:'9999' }, freeOnly = false, layer = L.layerGroup().addTo(map);
 
 let query = '';
-const isFree = m => /free/i.test(m.cost);
+const isFree = m => m.free !== undefined ? m.free : /free/i.test(m.cost);
 function fmtDates(ds) {
   const WD = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'], MN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   const groups = [];
@@ -244,6 +249,12 @@ function render() {
       <span class="tag ${/^free/i.test(m.cost) ? '' : 'paid'}">${m.cost}</span>
       <div><a href="${m.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Official page →</a></div>`;
     el.onclick = () => { map.setView([m.lat, m.lng], 13); marker.openPopup(); };
+    marker.on('popupopen', () => {
+      document.querySelectorAll('.item.active').forEach(x => x.classList.remove('active'));
+      el.classList.add('active');
+      if (window.innerWidth > 760) list.scrollTo({ top: el.getBoundingClientRect().top - list.getBoundingClientRect().top + list.scrollTop - 12, behavior: 'smooth' });
+    });
+    marker.on('popupclose', () => el.classList.remove('active'));
     list.appendChild(el);
   });
   if (shown.length) map.fitBounds(shown.map(m => [m.lat, m.lng]), { padding:[40,40], maxZoom:12 });
@@ -322,6 +333,11 @@ $('mSend').onclick = async () => {
   } catch (e) { msg.textContent = 'Sorry, something went wrong. Please try again.'; }
 };
 
+document.getElementById('q').addEventListener('input', e => { query = e.target.value.trim().toLowerCase(); render(); });
+(function () {
+  const wrap = document.getElementById('lights'), cols = ['#ffd54a', '#7be07b', '#8ad4ff', '#ff9fb2'];
+  for (let i = 0; i < 90; i++) { const b = document.createElement('i'); b.style.background = cols[i % 4]; b.style.color = cols[i % 4]; b.style.animationDelay = ((i % 5) * 0.3) + 's'; wrap.appendChild(b); }
+})();
 render();
 </script>
 </body>
