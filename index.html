@@ -22,9 +22,9 @@
   #map { height:100%; }
   .item { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:12px; margin-bottom:10px; cursor:pointer; }
   .item { transition: transform .15s ease, box-shadow .15s ease, background .15s ease, border-color .15s ease; }
-  .item:hover { border-color:var(--red); background:#fff; transform:translateY(-2px); box-shadow:0 6px 16px rgba(179,38,45,.25); }
-  .item:hover h3 { color:var(--red); }
-  .item h3 { margin:0 0 4px; font-size:1rem; color:var(--green); transition: color .15s ease; }
+  .item:hover { border-color:var(--green); background:#fff; transform:translateY(-2px); box-shadow:0 0 0 2px var(--green), 0 0 18px 4px rgba(31,107,69,.45); }
+  .item:hover h3 { color:var(--green); }
+  .item h3 { margin:0 0 4px; font-size:1rem; color:var(--red); transition: color .15s ease; }
   .item .meta { font-size:.85rem; color:var(--muted); line-height:1.4; }
   .tag { display:inline-block; font-size:.75rem; padding:2px 8px; border-radius:999px; background:#e6f2ec; color:var(--green); margin-top:6px; }
   .tag.paid { background:#fbe9ea; color:var(--red); }
@@ -40,6 +40,8 @@
   .pin { font-size:24px; line-height:1; filter: drop-shadow(0 1px 2px rgba(0,0,0,.4)); }
   .coffee { text-align:center; padding:14px 16px 24px; font-size:.95rem; }
   .coffee a { display:inline-block; margin-left:6px; background:var(--green); color:#fff; text-decoration:none; padding:8px 16px; border-radius:999px; font-weight:600; }
+  .search { flex:1 1 200px; max-width:260px; padding:7px 14px; border:1px solid var(--line); border-radius:999px; font-size:.9rem; }
+  .search:focus { outline:none; border-color:var(--green); box-shadow:0 0 0 3px rgba(31,107,69,.25); }
   .chip.add { background:none; border:none; color:var(--green); font-weight:700; padding:6px 8px; }
   .chip.add:hover { text-decoration:underline; }
   #modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:2000; align-items:center; justify-content:center; padding:16px; }
@@ -55,13 +57,6 @@
   .box .cancel { background:#eee; }
   #formMsg { color:var(--red); font-size:.85rem; margin-top:8px; min-height:1em; }
   footer { padding:8px 16px; font-size:.75rem; color:var(--muted); }
-  @media (min-width: 761px) {
-    body { height:100vh; display:flex; flex-direction:column; overflow:hidden; }
-    main { flex:1; min-height:0; height:auto; grid-template-rows:minmax(0,1fr); }
-    .coffee { padding:6px 16px 8px; font-size:.9rem; }
-    .coffee a { padding:5px 14px; }
-    footer { padding:4px 16px 0; text-align:center; }
-  }
   @media (max-width: 760px) {
     main { grid-template-columns: 1fr; grid-template-rows: 45vh auto; height:auto; }
     #map { order:-1; }
@@ -76,6 +71,7 @@
 </header>
 
 <div class="bar">
+  <input id="q" class="search" type="search" placeholder="🔍 Search a market or town">
   <span id="chips" style="display:contents"></span>
   <button class="chip" id="freeBtn">Free only</button>
   <button class="chip add" id="addBtn">➕ Missing a market?</button>
@@ -179,7 +175,7 @@ const MARKETS = [
   { name:"The Misty Sunday Christmas Market (Drumheller)", when:"Sun, Nov 29", time:"10 AM – 3 PM", dates:['2026-11-29'], free:false, cost:"Not listed",
     place:"Badlands Community Facility, Drumheller", lat:51.464, lng:-112.716, url:"https://www.facebook.com/photo/?fbid=122138871189356078&set=pb.61590682351235.-2207520000" },
   { name:"Distinctly Nanton Christmas Market", when:"Sat, Nov 28", time:"10 AM – 4 PM", dates:['2026-11-28'], free:false, cost:"Not listed",
-    place:"Nanton area (venue not confirmed, check the listing)", lat:50.35, lng:-113.765, url:"https://www.deannalavoie.com/new-events/2026/8/31/nanton-christmas-market" },
+    place:"Nanton Community Centre", lat:50.3485, lng:-113.7655, url:"https://www.facebook.com/people/Distinctly-Nanton-Christmas-Market/100057252947702/" },
   { name:"High River Winter Market", when:"Fri, Dec 4 (other days may follow, check listing)", time:"From 1:15 PM", dates:['2026-12-04'], free:false, cost:"Not listed",
     place:"Highwood Centre, High River", lat:50.581, lng:-113.875, url:"https://allevents.in/high-river/christmas" }
 ];
@@ -193,12 +189,14 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 const icon = L.divIcon({ html:'<div class="pin">🎄</div>', className:'', iconSize:[24,24], iconAnchor:[12,22], popupAnchor:[0,-20] });
 let range = { from:'0000', to:'9999' }, freeOnly = false, layer = L.layerGroup().addTo(map);
 
+let query = '';
+const matchesQuery = m => !query || (m.name + ' ' + m.place + ' ' + m.when).toLowerCase().includes(query);
 function popupHtml(m) {
   return `<strong>${m.name}</strong><br>${m.when}<br>${m.time}<br>${m.place}<br>${m.cost}<br><a href="${m.url}" target="_blank" rel="noopener">Official page →</a>`;
 }
 
 function render() {
-  const shown = MARKETS.filter(m => m.dates.some(x => x >= range.from && x <= range.to) && (!freeOnly || m.free));
+  const shown = MARKETS.filter(m => m.dates.some(x => x >= range.from && x <= range.to) && (!freeOnly || m.free) && matchesQuery(m));
   layer.clearLayers();
   const list = document.getElementById('list');
   list.innerHTML = '';
@@ -215,7 +213,7 @@ function render() {
   });
   if (shown.length) map.fitBounds(shown.map(m => [m.lat, m.lng]), { padding:[40,40], maxZoom:12 });
   document.getElementById('count').textContent = shown.length + ' market' + (shown.length === 1 ? '' : 's');
-  if (!shown.length) list.innerHTML = '<p>No markets match these filters.</p>';
+  if (!shown.length) list.innerHTML = '<p>No markets match. Try another date button or a different search.</p>';
   list.scrollTop = 0;
 }
 
@@ -271,6 +269,7 @@ document.getElementById('mSend').onclick = async () => {
   } catch (e) { msg.textContent = 'Sorry, something went wrong. Please try again.'; }
 };
 
+document.getElementById('q').addEventListener('input', e => { query = e.target.value.trim().toLowerCase(); render(); });
 render();
 </script>
 </body>
