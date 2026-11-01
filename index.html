@@ -27,6 +27,8 @@
   .tag.paid { background:#fbe9ea; color:var(--red); }
   .item a, .leaflet-popup-content a { color:var(--red); font-size:.85rem; }
   .pin { font-size:24px; line-height:1; filter: drop-shadow(0 1px 2px rgba(0,0,0,.4)); }
+  .coffee { text-align:center; padding:14px 16px 24px; font-size:.95rem; }
+  .coffee a { display:inline-block; margin-left:6px; background:var(--red); color:#fff; text-decoration:none; padding:8px 16px; border-radius:999px; font-weight:600; }
   footer { padding:8px 16px; font-size:.75rem; color:var(--muted); }
   @media (max-width: 760px) {
     main { grid-template-columns: 1fr; grid-template-rows: 45vh auto; height:auto; }
@@ -42,9 +44,7 @@
 </header>
 
 <div class="bar">
-  <button class="chip on" data-month="all">All</button>
-  <button class="chip" data-month="11">November</button>
-  <button class="chip" data-month="12">December</button>
+  <span id="chips" style="display:contents"></span>
   <button class="chip" id="freeBtn">Free only</button>
   <span class="count" id="count"></span>
 </div>
@@ -55,33 +55,38 @@
 </main>
 <footer>Dates and prices come from public listings and can change, so always check the market's own page before you go. Pin positions are approximate.</footer>
 
+<div class="coffee">Was this helpful? <a href="https://ko-fi.com/koffev" target="_blank" rel="noopener">☕ Buy me a coffee</a></div>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
+const iso = d => d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
+const R = (a, b) => { const o = []; for (let d = new Date(a + 'T12:00'); d <= new Date(b + 'T12:00'); d.setDate(d.getDate() + 1)) o.push(iso(d)); return o; };
 // ====== YOUR MARKET LIST: add a new market by copying one block and editing it ======
 const MARKETS = [
-  { name:"Millarville Christmas Market", when:"Nov 5–8 and Nov 12–15", time:"10 AM – 5 PM", months:[11], free:false, cost:"See website",
+  { name:"Millarville Christmas Market", when:"Nov 5–8 and Nov 12–15", time:"10 AM – 5 PM", dates:[...R('2026-11-05','2026-11-08'),...R('2026-11-12','2026-11-15')], free:false, cost:"See website",
     place:"Millarville Racing & Agricultural Society, 306097 192 St W", lat:50.895, lng:-114.35, url:"https://curiocity.com/?p=266326" },
-  { name:"Bowness Christmas Market", when:"Sat, Nov 7", time:"10 AM – 4 PM", months:[11], free:true, cost:"Free",
+  { name:"Bowness Christmas Market", when:"Sat, Nov 7", time:"10 AM – 4 PM", dates:['2026-11-07'], free:true, cost:"Free",
     place:"Bowness Community Association, 7904 43 Ave NW", lat:51.0867, lng:-114.2063, url:"https://www.eventbrite.ca/e/bowness-christmas-market-tickets-1999006545389" },
-  { name:"Inglewood Holiday Night Market", when:"Nov 13–14, 20–21, 27–28", time:"Evenings (check site)", months:[11], free:true, cost:"Free",
+  { name:"Inglewood Holiday Night Market", when:"Nov 13–14, 20–21, 27–28", time:"Evenings (check site)", dates:['2026-11-13','2026-11-14','2026-11-20','2026-11-21','2026-11-27','2026-11-28'], free:true, cost:"Free",
     place:"The Quonset at Crossroads Market, 1235 26 Ave SE", lat:51.0278, lng:-114.04, url:"https://www.inglewoodnightmarket.ca/" },
-  { name:"Grand South Christmas Market", when:"Sat, Nov 14", time:"10 AM – 4 PM", months:[11], free:false, cost:"Not listed",
+  { name:"Grand South Christmas Market", when:"Sat, Nov 14", time:"10 AM – 4 PM", dates:['2026-11-14'], free:false, cost:"Not listed",
     place:"29 Masters Park SE", lat:50.896, lng:-113.956, url:"https://happeningnext.com/event/the-grand-south-christmas-market-eid3a0dtchhxc" },
-  { name:"Spruce Meadows International Christmas Market", when:"Nov 13–15, 20–22, 27–29, Dec 4–6", time:"See website", months:[11,12], free:false, cost:"From $18",
+  { name:"Spruce Meadows International Christmas Market", when:"Nov 13–15, 20–22, 27–29, Dec 4–6", time:"See website", dates:[...R('2026-11-13','2026-11-15'),...R('2026-11-20','2026-11-22'),...R('2026-11-27','2026-11-29'),...R('2026-12-04','2026-12-06')], free:false, cost:"From $18",
     place:"18011 Spruce Meadows Way SW", lat:50.866, lng:-114.297, url:"https://www.sprucemeadows.com/christmasmarket/" },
-  { name:"Calgary Winter Market", when:"Thu–Sun starting Nov 19 (check end date)", time:"See website", months:[11], free:false, cost:"$10",
+  { name:"Calgary Winter Market", when:"Thu–Sun starting Nov 19 (check end date)", time:"See website", dates:[...R('2026-11-19','2026-11-22'),...R('2026-11-26','2026-11-29')], free:false, cost:"$10",
     place:"Eau Claire Plaza, 139 Barclay Parade SW", lat:51.051, lng:-114.072, url:"https://calgarywintermarket.ca/" },
-  { name:"Glenbrook Makers Market", when:"Sat, Nov 21", time:"10 AM – 4 PM", months:[11], free:true, cost:"Free",
+  { name:"Glenbrook Makers Market", when:"Sat, Nov 21", time:"10 AM – 4 PM", dates:['2026-11-21'], free:true, cost:"Free",
     place:"Glenbrook Community Association, 3524 45 St SW", lat:51.0215, lng:-114.164, url:"https://www.eventbrite.ca/e/glenbrook-makers-market-2026-tickets-2000280032423" },
-  { name:"Dalhousie Christmas Craft Market", when:"Sat, Nov 21", time:"10 AM – 3 PM", months:[11], free:true, cost:"Free",
+  { name:"Dalhousie Christmas Craft Market", when:"Sat, Nov 21", time:"10 AM – 3 PM", dates:['2026-11-21'], free:true, cost:"Free",
     place:"Dalhousie Community Association, 5432 Dalhart Rd NW", lat:51.103, lng:-114.163, url:"https://www.dalhousiecalgary.ca/events/christmas-craft-market/" },
-  { name:"U/D Night Market (Holiday)", when:"Thu, Nov 26", time:"5 – 9 PM", months:[11], free:true, cost:"Free",
+  { name:"U/D Night Market (Holiday)", when:"Thu, Nov 26", time:"5 – 9 PM", dates:['2026-11-26'], free:true, cost:"Free",
     place:"Central Commons Park, University District", lat:51.079, lng:-114.167, url:"https://myuniversitydistrict.ca/night-market-holiday/" },
-  { name:"Granary Road Christmas Market", when:"Nov 28–29", time:"10 AM – 4 PM", months:[11], free:false, cost:"Prices vary",
+  { name:"Granary Road Christmas Market", when:"Nov 28–29", time:"10 AM – 4 PM", dates:R('2026-11-28','2026-11-29'), free:false, cost:"Prices vary",
     place:"Granary Road, 226066 112 St W", lat:51.175, lng:-114.28, url:"https://www.granaryroad.com/christmas-market" },
-  { name:"The Barn Artisan Christmas Market", when:"Sun, Nov 29", time:"11 AM – 4 PM", months:[11], free:true, cost:"Free",
+  { name:"The Barn Artisan Christmas Market", when:"Sun, Nov 29", time:"11 AM – 4 PM", dates:['2026-11-29'], free:true, cost:"Free",
     place:"The Shawnessy Barn, 224 Shawmeadows Rd SW", lat:50.9137, lng:-114.0728, url:"https://allevents.in/calgary/the-barn-artisan-market-presents-the-christmas-market-tickets/80004216424065" },
-  { name:"Calgary Christmas Festival of Food, Craft & Vendor Market", when:"Dec 4–6", time:"10 AM – 6 PM", months:[12], free:true, cost:"Free",
+  { name:"Calgary Christmas Festival of Food, Craft & Vendor Market", when:"Dec 4–6", time:"10 AM – 6 PM", dates:R('2026-12-04','2026-12-06'), free:true, cost:"Free",
     place:"Olympic Plaza", lat:51.0461, lng:-114.0631, url:"https://happeningnext.com/event/✨-2026-calgary-christmas-festival-of-food-craft-and-vendor-market-✨-eid1ef0l2uwqqja" }
 ];
 // ====== end of list ======
@@ -92,14 +97,14 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(map);
 
 const icon = L.divIcon({ html:'<div class="pin">🎄</div>', className:'', iconSize:[24,24], iconAnchor:[12,22], popupAnchor:[0,-20] });
-let month = 'all', freeOnly = false, layer = L.layerGroup().addTo(map);
+let range = { from:'0000', to:'9999' }, freeOnly = false, layer = L.layerGroup().addTo(map);
 
 function popupHtml(m) {
   return `<strong>${m.name}</strong><br>${m.when}<br>${m.time}<br>${m.place}<br>${m.cost}<br><a href="${m.url}" target="_blank" rel="noopener">Official page →</a>`;
 }
 
 function render() {
-  const shown = MARKETS.filter(m => (month === 'all' || m.months.includes(+month)) && (!freeOnly || m.free));
+  const shown = MARKETS.filter(m => m.dates.some(x => x >= range.from && x <= range.to) && (!freeOnly || m.free));
   layer.clearLayers();
   const list = document.getElementById('list');
   list.innerHTML = '';
@@ -118,9 +123,33 @@ function render() {
   if (!shown.length) list.innerHTML = '<p>No markets match these filters.</p>';
 }
 
-document.querySelectorAll('[data-month]').forEach(b => b.onclick = () => {
-  document.querySelectorAll('[data-month]').forEach(x => x.classList.remove('on'));
-  b.classList.add('on'); month = b.dataset.month; render();
+const DAY = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'], MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function buildButtons() {
+  const out = [{ label:'All', from:'0000', to:'9999' }];
+  const today = new Date(); today.setHours(0,0,0,0);
+  const novStart = new Date(2026, 10, 1), novEnd = new Date(2026, 10, 30);
+  let cur = today < novStart ? novStart : today;
+  if (cur <= novEnd) {
+    const weekEnd = addDays(cur, 6 - cur.getDay());
+    for (let d = new Date(cur); d <= weekEnd && d <= novEnd; d = addDays(d, 1)) {
+      const isToday = d.getTime() === today.getTime();
+      out.push({ label: isToday ? 'Today' : DAY[d.getDay()] + ' ' + MON[d.getMonth()] + ' ' + d.getDate(), from: iso(d), to: iso(d) });
+    }
+    for (let st = addDays(weekEnd, 1); st <= novEnd; st = addDays(st, 7)) {
+      let en = addDays(st, 6); if (en > novEnd) en = novEnd;
+      out.push({ label: MON[st.getMonth()] + ' ' + st.getDate() + '–' + en.getDate(), from: iso(st), to: iso(en) });
+    }
+  }
+  out.push({ label:'December', from:'2026-12-01', to:'2026-12-31' });
+  return out;
+}
+const chips = document.getElementById('chips');
+buildButtons().forEach((r, i) => {
+  const b = document.createElement('button');
+  b.className = 'chip' + (i === 0 ? ' on' : '');
+  b.textContent = r.label;
+  b.onclick = () => { chips.querySelectorAll('.chip').forEach(x => x.classList.remove('on')); b.classList.add('on'); range = r; render(); };
+  chips.appendChild(b);
 });
 document.getElementById('freeBtn').onclick = e => { freeOnly = !freeOnly; e.target.classList.toggle('on', freeOnly); render(); };
 render();
