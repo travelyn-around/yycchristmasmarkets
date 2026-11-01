@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calgary Christmas Market Map 2026</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+  :root { --bg:#fffaf5; --card:#fff; --ink:#2b2b2b; --muted:#6b6b6b; --red:#b3262d; --green:#1f6b45; --line:#eadfd3; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background:var(--bg); color:var(--ink); }
+  header { background:var(--red); color:#fff; padding:14px 16px; }
+  header h1 { margin:0; font-size:1.25rem; }
+  header p { margin:4px 0 0; font-size:.85rem; opacity:.9; }
+  .bar { display:flex; flex-wrap:wrap; gap:8px; padding:10px 16px; background:#fff; border-bottom:1px solid var(--line); align-items:center; }
+  .chip { border:1px solid var(--line); background:#fff; border-radius:999px; padding:6px 14px; font-size:.9rem; cursor:pointer; }
+  .chip.on { background:var(--green); color:#fff; border-color:var(--green); }
+  .count { margin-left:auto; font-size:.85rem; color:var(--muted); }
+  main { display:grid; grid-template-columns: 380px 1fr; height: calc(100vh - 118px); }
+  #list { overflow-y:auto; padding:12px; border-right:1px solid var(--line); }
+  #map { height:100%; }
+  .item { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:12px; margin-bottom:10px; cursor:pointer; }
+  .item:hover { border-color:var(--green); }
+  .item h3 { margin:0 0 4px; font-size:1rem; }
+  .item .meta { font-size:.85rem; color:var(--muted); line-height:1.4; }
+  .tag { display:inline-block; font-size:.75rem; padding:2px 8px; border-radius:999px; background:#e6f2ec; color:var(--green); margin-top:6px; }
+  .tag.paid { background:#fbe9ea; color:var(--red); }
+  .item a, .leaflet-popup-content a { color:var(--red); font-size:.85rem; }
+  .pin { font-size:24px; line-height:1; filter: drop-shadow(0 1px 2px rgba(0,0,0,.4)); }
+  footer { padding:8px 16px; font-size:.75rem; color:var(--muted); }
+  @media (max-width: 760px) {
+    main { grid-template-columns: 1fr; grid-template-rows: 45vh auto; height:auto; }
+    #map { order:-1; }
+    #list { border-right:0; max-height:none; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>🎄 Calgary Christmas Market Map 2026</h1>
+  <p>Find Christmas markets in and around Calgary this November and December.</p>
+</header>
+
+<div class="bar">
+  <button class="chip on" data-month="all">All</button>
+  <button class="chip" data-month="11">November</button>
+  <button class="chip" data-month="12">December</button>
+  <button class="chip" id="freeBtn">Free only</button>
+  <span class="count" id="count"></span>
+</div>
+
+<main>
+  <div id="list"></div>
+  <div id="map"></div>
+</main>
+<footer>Dates and prices come from public listings and can change, so always check the market's own page before you go. Pin positions are approximate.</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// ====== YOUR MARKET LIST: add a new market by copying one block and editing it ======
+const MARKETS = [
+  { name:"Millarville Christmas Market", when:"Nov 5–8 and Nov 12–15", time:"10 AM – 5 PM", months:[11], free:false, cost:"See website",
+    place:"Millarville Racing & Agricultural Society, 306097 192 St W", lat:50.895, lng:-114.35, url:"https://curiocity.com/?p=266326" },
+  { name:"Bowness Christmas Market", when:"Sat, Nov 7", time:"10 AM – 4 PM", months:[11], free:true, cost:"Free",
+    place:"Bowness Community Association, 7904 43 Ave NW", lat:51.0867, lng:-114.2063, url:"https://www.eventbrite.ca/e/bowness-christmas-market-tickets-1999006545389" },
+  { name:"Inglewood Holiday Night Market", when:"Nov 13–14, 20–21, 27–28", time:"Evenings (check site)", months:[11], free:true, cost:"Free",
+    place:"The Quonset at Crossroads Market, 1235 26 Ave SE", lat:51.0278, lng:-114.04, url:"https://www.inglewoodnightmarket.ca/" },
+  { name:"Grand South Christmas Market", when:"Sat, Nov 14", time:"10 AM – 4 PM", months:[11], free:false, cost:"Not listed",
+    place:"29 Masters Park SE", lat:50.896, lng:-113.956, url:"https://happeningnext.com/event/the-grand-south-christmas-market-eid3a0dtchhxc" },
+  { name:"Spruce Meadows International Christmas Market", when:"Nov 13–15, 20–22, 27–29, Dec 4–6", time:"See website", months:[11,12], free:false, cost:"From $18",
+    place:"18011 Spruce Meadows Way SW", lat:50.866, lng:-114.297, url:"https://www.sprucemeadows.com/christmasmarket/" },
+  { name:"Calgary Winter Market", when:"Thu–Sun starting Nov 19 (check end date)", time:"See website", months:[11], free:false, cost:"$10",
+    place:"Eau Claire Plaza, 139 Barclay Parade SW", lat:51.051, lng:-114.072, url:"https://calgarywintermarket.ca/" },
+  { name:"Glenbrook Makers Market", when:"Sat, Nov 21", time:"10 AM – 4 PM", months:[11], free:true, cost:"Free",
+    place:"Glenbrook Community Association, 3524 45 St SW", lat:51.0215, lng:-114.164, url:"https://www.eventbrite.ca/e/glenbrook-makers-market-2026-tickets-2000280032423" },
+  { name:"Dalhousie Christmas Craft Market", when:"Sat, Nov 21", time:"10 AM – 3 PM", months:[11], free:true, cost:"Free",
+    place:"Dalhousie Community Association, 5432 Dalhart Rd NW", lat:51.103, lng:-114.163, url:"https://www.dalhousiecalgary.ca/events/christmas-craft-market/" },
+  { name:"U/D Night Market (Holiday)", when:"Thu, Nov 26", time:"5 – 9 PM", months:[11], free:true, cost:"Free",
+    place:"Central Commons Park, University District", lat:51.079, lng:-114.167, url:"https://myuniversitydistrict.ca/night-market-holiday/" },
+  { name:"Granary Road Christmas Market", when:"Nov 28–29", time:"10 AM – 4 PM", months:[11], free:false, cost:"Prices vary",
+    place:"Granary Road, 226066 112 St W", lat:51.175, lng:-114.28, url:"https://www.granaryroad.com/christmas-market" },
+  { name:"The Barn Artisan Christmas Market", when:"Sun, Nov 29", time:"11 AM – 4 PM", months:[11], free:true, cost:"Free",
+    place:"The Shawnessy Barn, 224 Shawmeadows Rd SW", lat:50.9137, lng:-114.0728, url:"https://allevents.in/calgary/the-barn-artisan-market-presents-the-christmas-market-tickets/80004216424065" },
+  { name:"Calgary Christmas Festival of Food, Craft & Vendor Market", when:"Dec 4–6", time:"10 AM – 6 PM", months:[12], free:true, cost:"Free",
+    place:"Olympic Plaza", lat:51.0461, lng:-114.0631, url:"https://happeningnext.com/event/✨-2026-calgary-christmas-festival-of-food-craft-and-vendor-market-✨-eid1ef0l2uwqqja" }
+];
+// ====== end of list ======
+
+const map = L.map('map').setView([51.0447, -114.0719], 10);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 18, attribution: '&copy; OpenStreetMap contributors'
+}).addTo(map);
+
+const icon = L.divIcon({ html:'<div class="pin">🎄</div>', className:'', iconSize:[24,24], iconAnchor:[12,22], popupAnchor:[0,-20] });
+let month = 'all', freeOnly = false, layer = L.layerGroup().addTo(map);
+
+function popupHtml(m) {
+  return `<strong>${m.name}</strong><br>${m.when}<br>${m.time}<br>${m.place}<br>${m.cost}<br><a href="${m.url}" target="_blank" rel="noopener">Official page →</a>`;
+}
+
+function render() {
+  const shown = MARKETS.filter(m => (month === 'all' || m.months.includes(+month)) && (!freeOnly || m.free));
+  layer.clearLayers();
+  const list = document.getElementById('list');
+  list.innerHTML = '';
+  shown.forEach(m => {
+    const marker = L.marker([m.lat, m.lng], { icon }).bindPopup(popupHtml(m)).addTo(layer);
+    const el = document.createElement('div');
+    el.className = 'item';
+    el.innerHTML = `<h3>${m.name}</h3>
+      <div class="meta">📅 ${m.when}<br>🕒 ${m.time}<br>📍 ${m.place}</div>
+      <span class="tag ${m.free ? '' : 'paid'}">${m.cost}</span>
+      <div><a href="${m.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Official page →</a></div>`;
+    el.onclick = () => { map.setView([m.lat, m.lng], 13); marker.openPopup(); };
+    list.appendChild(el);
+  });
+  document.getElementById('count').textContent = shown.length + ' market' + (shown.length === 1 ? '' : 's');
+  if (!shown.length) list.innerHTML = '<p>No markets match these filters.</p>';
+}
+
+document.querySelectorAll('[data-month]').forEach(b => b.onclick = () => {
+  document.querySelectorAll('[data-month]').forEach(x => x.classList.remove('on'));
+  b.classList.add('on'); month = b.dataset.month; render();
+});
+document.getElementById('freeBtn').onclick = e => { freeOnly = !freeOnly; e.target.classList.toggle('on', freeOnly); render(); };
+render();
+</script>
+</body>
+</html>
