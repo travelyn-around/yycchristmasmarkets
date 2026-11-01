@@ -130,7 +130,7 @@ const R = (a, b) => { const o = []; for (let d = new Date(a + 'T12:00'); d <= ne
 //   note:  (optional) extra words shown after the dates, e.g. note:"other days may follow"
 // The date line on each card, the date buttons and the sorting all come from "dates", so that is the one to keep right.
 const MARKETS = [
-  { name:"Millarville Christmas Market", time:"10 AM – 5 PM", dates:[...R('2026-11-05','2026-11-08'),...R('2026-11-12','2026-11-15')], cost:"$8 (ages 12+), free under 12",
+  { name:"Millarville Christmas Market", time:"10 AM – 5 PM", dates:[...R('2026-11-05','2026-11-08'),...R('2026-11-12','2026-11-15')], cost:"$8 (ages 12+), free under 12", free:false, 
     place:"Millarville Racing & Agricultural Society, 306097 192 St W", lat:50.895, lng:-114.35, url:"https://millarvilleracetrack.com/annual-christmas-market/" },
   { name:"Bowness Christmas Market", time:"10 AM – 4 PM", dates:['2026-11-07'], cost:"Free",
     place:"Bowness Community Association, 7904 43 Ave NW", lat:51.0867, lng:-114.2063, url:"https://www.eventbrite.ca/e/bowness-christmas-market-tickets-1999006545389" },
@@ -184,7 +184,7 @@ const MARKETS = [
     place:"1 Manyhorses Dr, Redwood Meadows", lat:50.97, lng:-114.53, url:"https://www.facebook.com/events/1887168459575496" },
   { name:"YYC Weihnachtsmarkt Christmas Market", time:"10 AM – 4 PM", dates:R('2026-11-28','2026-11-29'), cost:"Not listed",
     place:"260 Century Downs Dr, Balzac", lat:51.2132, lng:-114.0016, url:"https://www.facebook.com/events/1054293574080813" },
-  { name:"Airdrie Farmers' Market Christmas Markets", time:"Fri 10 AM – 7 PM, Sat 10 AM – 4 PM", dates:[...R('2026-11-06','2026-11-07'),'2026-12-05'], cost:"Not listed",
+  { name:"Airdrie Farmers' Market Christmas Markets", time:"Fri 10 AM – 7 PM, Sat 10 AM – 4 PM", dates:[...R('2026-11-06','2026-11-07'),'2026-12-05'], cost:"Free, donation to Food Bank",
     place:"Airdrie Town & Country Centre, 275 Jensen Dr NE", lat:51.301, lng:-114.001, url:"https://www.facebook.com/events/1104802188723298" },
   { name:"Yuletide Market (Olds)", time:"10 AM – 4 PM", dates:R('2026-11-07','2026-11-08'), cost:"Not listed",
     place:"Future Ag Event Centre (formerly Cow Palace), Olds", lat:51.792, lng:-114.109, url:"https://merryabouttown.com/central-alberta-christmas-markets/" },
