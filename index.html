@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Calgary Christmas Market Map 2026</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎄</text></svg>">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
   :root { --bg:#fffaf5; --card:#fff; --ink:#2b2b2b; --muted:#6b6b6b; --red:#b3262d; --green:#1f6b45; --line:#eadfd3; }
@@ -55,7 +56,7 @@
 </main>
 <footer>Dates and prices come from public listings and can change, so always check the market's own page before you go. Pin positions are approximate.</footer>
 
-<div class="coffee">Was this helpful? <a href="https://ko-fi.com/koffev" target="_blank" rel="noopener">☕ Buy me a coffee</a></div>
+<div class="coffee">Was this helpful? <a href="https://ko-fi.com/koffev" target="_blank" rel="noopener">Help fuel ☕</a></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
@@ -144,7 +145,7 @@ function buildButtons() {
   return out;
 }
 const chips = document.getElementById('chips');
-buildButtons().forEach((r, i) => {
+buildButtons().filter((r, i) => i === 0 || MARKETS.some(m => m.dates.some(x => x >= r.from && x <= r.to))).forEach((r, i) => {
   const b = document.createElement('button');
   b.className = 'chip' + (i === 0 ? ' on' : '');
   b.textContent = r.label;
