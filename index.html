@@ -23,7 +23,7 @@
   .item { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:12px; margin-bottom:10px; cursor:pointer; }
   .item { transition: transform .15s ease, box-shadow .15s ease, background .15s ease, border-color .15s ease; }
   .item:hover { border-color:var(--red); background:#fff; transform:translateY(-2px); box-shadow:0 6px 16px rgba(179,38,45,.25); }
-  .item:hover h3 { color:var(--red); }
+  .item:hover h3 { color:var(--green); }
   .item h3 { margin:0 0 4px; font-size:1rem; }
   .item .meta { font-size:.85rem; color:var(--muted); line-height:1.4; }
   .tag { display:inline-block; font-size:.75rem; padding:2px 8px; border-radius:999px; background:#e6f2ec; color:var(--green); margin-top:6px; }
@@ -32,12 +32,17 @@
   .leaflet-popup-content-wrapper { background:#fff; border-top:5px solid var(--red); border-radius:14px; box-shadow:0 8px 24px rgba(179,38,45,.35); }
   .leaflet-popup-tip { background:#fff; }
   .leaflet-popup-content { margin:14px 18px; line-height:1.55; font-size:.9rem; }
-  .leaflet-popup-content strong { color:var(--red); font-size:1.05rem; }
+  .leaflet-popup-content strong { color:var(--green); font-size:1.05rem; }
   .leaflet-popup-content a { display:inline-block; margin-top:6px; background:var(--green); color:#fff; padding:5px 12px; border-radius:999px; text-decoration:none; font-weight:600; }
+  #list::-webkit-scrollbar { width:12px; }
+  #list::-webkit-scrollbar-track { background:#f1e7d8; }
+  #list::-webkit-scrollbar-thumb { background:var(--green); border-radius:8px; border:2px solid #f1e7d8; }
+  .hint { position:sticky; bottom:0; text-align:center; padding:26px 0 8px; margin-top:-10px; background:linear-gradient(to top, #fff0d2 45%, rgba(255,240,210,0)); font-weight:700; color:var(--green); font-size:.85rem; pointer-events:none; }
   .pin { font-size:24px; line-height:1; filter: drop-shadow(0 1px 2px rgba(0,0,0,.4)); }
   .coffee { text-align:center; padding:14px 16px 24px; font-size:.95rem; }
   .coffee a { display:inline-block; margin-left:6px; background:var(--green); color:#fff; text-decoration:none; padding:8px 16px; border-radius:999px; font-weight:600; }
-  .chip.add { background:var(--green); color:#fff; border-color:var(--green); }
+  .chip.add { background:none; border:none; color:var(--green); font-weight:700; padding:6px 8px; }
+  .chip.add:hover { text-decoration:underline; }
   #modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:2000; align-items:center; justify-content:center; padding:16px; }
   #modal.open { display:flex; }
   .box { background:#fff; border-top:6px solid var(--red); border-radius:14px; padding:20px; width:100%; max-width:420px; box-shadow:0 10px 30px rgba(0,0,0,.35); }
@@ -55,6 +60,7 @@
     main { grid-template-columns: 1fr; grid-template-rows: 45vh auto; height:auto; }
     #map { order:-1; }
     #list { border-right:0; max-height:none; }
+    .hint { display:none; }
   }
 </style>
 </head>
@@ -156,7 +162,21 @@ const MARKETS = [
   { name:"Redwood Meadows Christmas Market", when:"Nov 21–22", time:"10 AM – 5 PM (Sun until 4)", dates:R('2026-11-21','2026-11-22'), free:false, cost:"Not listed",
     place:"1 Manyhorses Dr, Redwood Meadows", lat:50.97, lng:-114.53, url:"https://www.facebook.com/events/1887168459575496" },
   { name:"YYC Weihnachtsmarkt Christmas Market", when:"Nov 28–29", time:"10 AM – 4 PM", dates:R('2026-11-28','2026-11-29'), free:false, cost:"Not listed",
-    place:"260 Century Downs Dr, Balzac", lat:51.2132, lng:-114.0016, url:"https://www.facebook.com/events/1054293574080813" }
+    place:"260 Century Downs Dr, Balzac", lat:51.2132, lng:-114.0016, url:"https://www.facebook.com/events/1054293574080813" },
+  { name:"Airdrie Farmers' Market Christmas Markets", when:"Nov 6–7 and Sat, Dec 5", time:"Fri 10 AM – 7 PM, Sat 10 AM – 4 PM", dates:[...R('2026-11-06','2026-11-07'),'2026-12-05'], free:false, cost:"Not listed",
+    place:"Airdrie Town & Country Centre, 275 Jensen Dr NE", lat:51.301, lng:-114.001, url:"https://www.facebook.com/events/1104802188723298" },
+  { name:"Yuletide Market (Olds)", when:"Nov 7–8", time:"10 AM – 4 PM", dates:R('2026-11-07','2026-11-08'), free:false, cost:"Not listed",
+    place:"Future Ag Event Centre (formerly Cow Palace), Olds", lat:51.792, lng:-114.109, url:"https://merryabouttown.com/central-alberta-christmas-markets/" },
+  { name:"Country Wonderland Market (Olds)", when:"Nov 13–14", time:"Fri 5 – 9 PM, Sat 10 AM – 4 PM", dates:R('2026-11-13','2026-11-14'), free:false, cost:"Not listed",
+    place:"Future Ag Event Centre (formerly Cow Palace), Olds", lat:51.7925, lng:-114.1085, url:"https://www.facebook.com/events/1040018738956027" },
+  { name:"Didsbury Christmas Market", when:"Sat, Nov 21", time:"10 AM – 4 PM", dates:['2026-11-21'], free:false, cost:"Not listed",
+    place:"Zion Church, Didsbury", lat:51.659, lng:-114.13, url:"https://www.facebook.com/events/1930964787612439" },
+  { name:"The Misty Sunday Christmas Market (Drumheller)", when:"Sun, Nov 29", time:"10 AM – 3 PM", dates:['2026-11-29'], free:false, cost:"Not listed",
+    place:"Badlands Community Facility, Drumheller", lat:51.464, lng:-112.716, url:"https://www.facebook.com/photo/?fbid=122138871189356078&set=pb.61590682351235.-2207520000" },
+  { name:"Distinctly Nanton Christmas Market", when:"Sat, Nov 28", time:"10 AM – 4 PM", dates:['2026-11-28'], free:false, cost:"Not listed",
+    place:"Nanton area (venue not confirmed, check the listing)", lat:50.35, lng:-113.765, url:"https://www.deannalavoie.com/new-events/2026/8/31/nanton-christmas-market" },
+  { name:"High River Winter Market", when:"Fri, Dec 4 (other days may follow, check listing)", time:"From 1:15 PM", dates:['2026-12-04'], free:false, cost:"Not listed",
+    place:"Highwood Centre, High River", lat:50.581, lng:-113.875, url:"https://allevents.in/high-river/christmas" }
 ];
 // ====== end of list ======
 
@@ -191,6 +211,8 @@ function render() {
   if (shown.length) map.fitBounds(shown.map(m => [m.lat, m.lng]), { padding:[40,40], maxZoom:12 });
   document.getElementById('count').textContent = shown.length + ' market' + (shown.length === 1 ? '' : 's');
   if (!shown.length) list.innerHTML = '<p>No markets match these filters.</p>';
+  else { const h = document.createElement('div'); h.className = 'hint'; h.id = 'hint'; h.textContent = '↓ Scroll for more markets'; list.appendChild(h); }
+  list.scrollTop = 0; updateHint();
 }
 
 const DAY = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'], MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -245,6 +267,15 @@ document.getElementById('mSend').onclick = async () => {
   } catch (e) { msg.textContent = 'Sorry, something went wrong. Please try again.'; }
 };
 
+function updateHint() {
+  const l = document.getElementById('list'), h = document.getElementById('hint');
+  if (!h) return;
+  const atEnd = l.scrollTop + l.clientHeight >= l.scrollHeight - 14;
+  const noScroll = l.scrollHeight <= l.clientHeight + 2;
+  h.style.visibility = (atEnd || noScroll) ? 'hidden' : 'visible';
+}
+document.getElementById('list').addEventListener('scroll', updateHint);
+window.addEventListener('resize', updateHint);
 render();
 </script>
 </body>
