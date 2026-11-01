@@ -29,14 +29,27 @@
   .tag { display:inline-block; font-size:.75rem; padding:2px 8px; border-radius:999px; background:#e6f2ec; color:var(--green); margin-top:6px; }
   .tag.paid { background:#fbe9ea; color:var(--red); }
   .item a, .leaflet-popup-content a { color:var(--red); font-size:.85rem; }
-  .leaflet-popup-content-wrapper { background:#fffbea; border-top:5px solid var(--red); border-radius:14px; box-shadow:0 8px 24px rgba(179,38,45,.35); }
-  .leaflet-popup-tip { background:#fffbea; }
+  .leaflet-popup-content-wrapper { background:#e4f5e1; border-top:5px solid var(--red); border-radius:14px; box-shadow:0 8px 24px rgba(179,38,45,.35); }
+  .leaflet-popup-tip { background:#e4f5e1; }
   .leaflet-popup-content { margin:14px 18px; line-height:1.55; font-size:.9rem; }
   .leaflet-popup-content strong { color:var(--red); font-size:1.05rem; }
-  .leaflet-popup-content a { display:inline-block; margin-top:6px; background:var(--green); color:#fff; padding:5px 12px; border-radius:999px; text-decoration:none; font-weight:600; }
+  .leaflet-popup-content a { display:inline-block; margin-top:6px; background:var(--red); color:#fff; padding:5px 12px; border-radius:999px; text-decoration:none; font-weight:600; }
   .pin { font-size:24px; line-height:1; filter: drop-shadow(0 1px 2px rgba(0,0,0,.4)); }
   .coffee { text-align:center; padding:14px 16px 24px; font-size:.95rem; }
   .coffee a { display:inline-block; margin-left:6px; background:var(--red); color:#fff; text-decoration:none; padding:8px 16px; border-radius:999px; font-weight:600; }
+  .chip.add { background:var(--red); color:#fff; border-color:var(--red); }
+  #modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:2000; align-items:center; justify-content:center; padding:16px; }
+  #modal.open { display:flex; }
+  .box { background:#fff; border-top:6px solid var(--red); border-radius:14px; padding:20px; width:100%; max-width:420px; box-shadow:0 10px 30px rgba(0,0,0,.35); }
+  .box h2 { margin:0 0 6px; font-size:1.15rem; color:var(--red); }
+  .box p { margin:0 0 12px; font-size:.85rem; color:var(--muted); }
+  .box label { display:block; font-size:.85rem; font-weight:600; margin:10px 0 4px; }
+  .box input { width:100%; padding:9px 10px; border:1px solid var(--line); border-radius:8px; font-size:.95rem; }
+  .box .row { display:flex; gap:8px; margin-top:16px; justify-content:flex-end; }
+  .box .btn { border:0; border-radius:999px; padding:9px 18px; font-size:.9rem; cursor:pointer; }
+  .box .send { background:var(--green); color:#fff; font-weight:600; }
+  .box .cancel { background:#eee; }
+  #formMsg { color:var(--red); font-size:.85rem; margin-top:8px; min-height:1em; }
   footer { padding:8px 16px; font-size:.75rem; color:var(--muted); }
   @media (max-width: 760px) {
     main { grid-template-columns: 1fr; grid-template-rows: 45vh auto; height:auto; }
@@ -48,12 +61,13 @@
 <body>
 <header>
   <h1>🎄 Calgary Christmas Market Map 2026</h1>
-  <p>Find Christmas markets in and around Calgary this November and December.</p>
+  <p>Find Christmas markets in and around Calgary.</p>
 </header>
 
 <div class="bar">
   <span id="chips" style="display:contents"></span>
   <button class="chip" id="freeBtn">Free only</button>
+  <button class="chip add" id="addBtn">➕ Missing a market?</button>
   <span class="count" id="count"></span>
 </div>
 
@@ -62,6 +76,21 @@
   <div id="map"></div>
 </main>
 <footer>Dates and prices come from public listings and can change, so always check the market's own page before you go. Pin positions are approximate.</footer>
+
+<div id="modal">
+  <div class="box">
+    <h2>Missing a Christmas market?</h2>
+    <p>Send me a link and I'll add it to the map.</p>
+    <label for="mLink">Link to the market (required)</label>
+    <input id="mLink" type="text" placeholder="https://...">
+    <label for="mName">Market name (optional)</label>
+    <input id="mName" type="text">
+    <label for="mFrom">Your email, if you'd like a reply (optional)</label>
+    <input id="mFrom" type="text">
+    <div id="formMsg"></div>
+    <div class="row"><button class="btn cancel" id="mCancel">Cancel</button><button class="btn send" id="mSend">Send</button></div>
+  </div>
+</div>
 
 <div class="coffee">Was this helpful? <a href="https://ko-fi.com/koffev" target="_blank" rel="noopener">Help fuel ☕</a></div>
 
@@ -160,6 +189,23 @@ buildButtons().filter((r, i) => i === 0 || MARKETS.some(m => m.dates.some(x => x
   chips.appendChild(b);
 });
 document.getElementById('freeBtn').onclick = e => { freeOnly = !freeOnly; e.target.classList.toggle('on', freeOnly); render(); };
+// ====== SUGGEST A MARKET: put YOUR email address between the quotes ======
+const CONTACT_EMAIL = 'PUT-YOUR-EMAIL-HERE';
+// =========================================================================
+const modal = document.getElementById('modal');
+document.getElementById('addBtn').onclick = () => { document.getElementById('formMsg').textContent = ''; modal.classList.add('open'); };
+document.getElementById('mCancel').onclick = () => modal.classList.remove('open');
+modal.onclick = e => { if (e.target === modal) modal.classList.remove('open'); };
+document.getElementById('mSend').onclick = () => {
+  const link = document.getElementById('mLink').value.trim();
+  if (!link) { document.getElementById('formMsg').textContent = 'Please paste a link to the market.'; return; }
+  const name = document.getElementById('mName').value.trim();
+  const from = document.getElementById('mFrom').value.trim();
+  const body = 'Link: ' + link + '\nMarket name: ' + (name || '(not given)') + '\nReply to: ' + (from || '(not given)');
+  window.location.href = 'mailto:' + CONTACT_EMAIL + '?subject=' + encodeURIComponent('Missing Christmas market') + '&body=' + encodeURIComponent(body);
+  modal.classList.remove('open');
+};
+
 render();
 </script>
 </body>
