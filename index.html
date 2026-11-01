@@ -12,15 +12,13 @@
   body { margin:0; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background:linear-gradient(180deg,#fff3d6 0%,#ffe4e1 100%) fixed; color:var(--ink); }
   header { position:relative; overflow:hidden; color:#fff; padding:26px 16px 14px;
     background-image: radial-gradient(circle at 20% 30%, rgba(255,255,255,.22) 2px, transparent 3px), radial-gradient(circle at 70% 65%, rgba(255,255,255,.18) 2px, transparent 3px), linear-gradient(120deg,#8e1b22 0%,#c62d36 45%,#e8474d 100%);
-    background-size: 64px 64px, 96px 96px, auto; border-bottom:4px solid #ffd54a; }
+    background-size: 64px 64px, 96px 96px, auto; }
   header h1 { margin:0; font-size:1.35rem; text-shadow:0 2px 4px rgba(0,0,0,.25); position:relative; }
   header p { margin:4px 0 0; font-size:.9rem; opacity:.95; position:relative; }
   #lights { position:absolute; top:0; left:0; right:0; height:16px; display:flex; justify-content:space-between; overflow:hidden; border-top:2px solid rgba(0,0,0,.25); }
   #lights i { width:9px; height:13px; margin-top:3px; border-radius:50% 50% 55% 55%; box-shadow:0 0 8px 2px currentColor; animation:twinkle 1.6s ease-in-out infinite alternate; }
   @keyframes twinkle { from { opacity:.45; } to { opacity:1; } }
-  .deco { position:absolute; right:16px; bottom:8px; font-size:1.7rem; letter-spacing:6px; filter:drop-shadow(0 2px 3px rgba(0,0,0,.3)); }
   @media (prefers-reduced-motion: reduce) { #lights i { animation:none; } }
-  @media (max-width: 760px) { .deco { font-size:1.2rem; letter-spacing:2px; } }
   .bar { display:flex; flex-wrap:wrap; gap:8px; padding:10px 16px; background:#fff; border-bottom:1px solid var(--line); align-items:center; }
   .chip { border:1px solid var(--line); background:#fff; border-radius:999px; padding:6px 14px; font-size:.9rem; cursor:pointer; }
   .chip.on { background:var(--green); color:#fff; border-color:var(--green); }
@@ -75,7 +73,6 @@
 <body>
 <header>
   <div id="lights"></div>
-  <div class="deco">🎁🍪🎄🍪🎁</div>
   <h1>🎄 Calgary Christmas Market Map 2026</h1>
   <p>Find Christmas markets in and around Calgary.</p>
 </header>
@@ -128,7 +125,7 @@ const MARKETS = [
     place:"29 Masters Park SE", lat:50.896, lng:-113.956, url:"https://happeningnext.com/event/the-grand-south-christmas-market-eid3a0dtchhxc" },
   { name:"Spruce Meadows International Christmas Market", when:"Nov 13–15, 20–22, 27–29, Dec 4–6", time:"See website", dates:[...R('2026-11-13','2026-11-15'),...R('2026-11-20','2026-11-22'),...R('2026-11-27','2026-11-29'),...R('2026-12-04','2026-12-06')], free:false, cost:"From $18",
     place:"18011 Spruce Meadows Way SW", lat:50.866, lng:-114.297, url:"https://www.sprucemeadows.com/christmasmarket/" },
-  { name:"Calgary Winter Market", when:"Thu–Sun from Nov 19 (daily Dec 15–24)", time:"See website", dates:[...R('2026-11-19','2026-11-22'),...R('2026-11-26','2026-11-29'),...R('2026-12-03','2026-12-06'),...R('2026-12-10','2026-12-13'),...R('2026-12-15','2026-12-24')], free:false, cost:"$10",
+  { name:"Calgary Winter Market", when:"Thu–Sun from Nov 19 (daily Dec 15–24)", time:"See website", dates:[...R('2026-11-19','2026-11-22'),...R('2026-11-26','2026-11-29'),...R('2026-12-03','2026-12-06'),...R('2026-12-10','2026-12-13'),...R('2026-12-15','2026-12-24')], free:false, cost:"$10 (free before 5 PM daily, free Sundays and Dec 24, always free for under 18 and 65+)",
     place:"Eau Claire Plaza, 139 Barclay Parade SW", lat:51.051, lng:-114.072, url:"https://calgarywintermarket.ca/" },
   { name:"Glenbrook Makers Market", when:"Sat, Nov 21", time:"10 AM – 4 PM", dates:['2026-11-21'], free:true, cost:"Free",
     place:"Glenbrook Community Association, 3524 45 St SW", lat:51.0215, lng:-114.164, url:"https://www.eventbrite.ca/e/glenbrook-makers-market-2026-tickets-2000280032423" },
