@@ -1,0 +1,9 @@
+{
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "destination": "https://travelynaround.com/calgary-christmas-markets-2026",
+      "permanent": true
+    }
+  ]
+}
