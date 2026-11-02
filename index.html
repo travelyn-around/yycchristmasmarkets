@@ -275,13 +275,19 @@ function buildButtons() {
   let cur = today < novStart ? novStart : today;
   if (cur <= novEnd) {
     const weekEnd = addDays(cur, 6 - cur.getDay());
-    for (let d = new Date(cur); d <= weekEnd && d <= novEnd; d = addDays(d, 1)) {
-      const isToday = d.getTime() === today.getTime();
-      out.push({ label: isToday ? 'Today' : DAY[d.getDay()] + ' ' + MON[d.getMonth()] + ' ' + d.getDate(), from: iso(d), to: iso(d) });
-    }
+    const hasMarket = ds => MARKETS.some(m => m.dates.includes(ds));
+    const dayBtn = d => ({ label: d.getTime() === today.getTime() ? 'Today' : DAY[d.getDay()] + ' ' + MON[d.getMonth()] + ' ' + d.getDate(), from: iso(d), to: iso(d) });
+    const single = new Set();
+    // each day of this week, plus the Sunday that ends the weekend
+    for (let d = new Date(cur); d <= addDays(weekEnd, 1) && d <= novEnd; d = addDays(d, 1)) { out.push(dayBtn(d)); single.add(iso(d)); }
     for (let st = addDays(weekEnd, 1); st <= novEnd; st = addDays(st, 7)) {
       let en = addDays(st, 6); if (en > novEnd) en = novEnd;
       out.push({ label: MON[st.getMonth()] + ' ' + st.getDate() + '–' + en.getDate(), from: iso(st), to: iso(en) });
+      // a week whose markets only fall on Fri, Sat and Sun also gets a button for each of those days
+      const days = [];
+      for (let d = new Date(st); d <= en; d = addDays(d, 1)) if (hasMarket(iso(d))) days.push(d);
+      if (days.length > 1 && days.every(d => [0, 5, 6].includes(d.getDay())))
+        days.forEach(d => { if (!single.has(iso(d))) { out.push(dayBtn(d)); single.add(iso(d)); } });
     }
   }
   out.push({ label:'December', from:'2026-12-01', to:'2026-12-31' });
